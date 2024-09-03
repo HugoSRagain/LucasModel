@@ -1,0 +1,47 @@
+# Installer et charger les packages nécessaires
+install.packages("plotly")
+library(plotly)
+
+# Paramètres du modèle de Lucas
+H <- seq(1, 100, length.out = 100)  # Capital humain
+K <- seq(1, 100, length.out = 100)  # Capital physique
+A <- 1                              # Productivité (constant pour simplification)
+alpha <- 0.3                        # Élasticité du capital physique
+beta <- 0.7                         # Élasticité du capital humain
+
+# Fonction de production de Lucas
+output <- function(H, K, A, alpha, beta) {
+  return(A * K^alpha * H^beta)
+}
+
+# Créer une grille de données
+H_grid <- rep(H, each = length(K))
+K_grid <- rep(K, times = length(H))
+Y <- output(H_grid, K_grid, A, alpha, beta)
+
+# Convertir les données en format de matrice pour l'affichage 3D
+Y_matrix <- matrix(Y, nrow = length(H), ncol = length(K))
+
+# Créer un graphique interactif avec plotly
+fig <- plot_ly(
+  x = ~H_grid,
+  y = ~K_grid,
+  z = ~Y,
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(size = 3, color = ~Y, colorscale = 'Viridis')
+)
+
+# Ajouter les axes et le titre
+fig <- fig %>% layout(
+  title = "Lucas Model: Output as a Function of Human and Physical Capital",
+  scene = list(
+    xaxis = list(title = "Human Capital (H)"),
+    yaxis = list(title = "Physical Capital (K)"),
+    zaxis = list(title = "Output (Y)")
+  )
+)
+
+# Afficher le graphique
+fig
+
